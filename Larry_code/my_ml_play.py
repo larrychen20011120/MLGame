@@ -28,20 +28,18 @@ def predict_des():
 def reflect_adjust(des):
     if des is None:
         return None
-    while des < 0 or des > 195:
+    while des < 0 or des > 200:
         if des < 0:
             des = -des
         else:
             des = 400 - des
 
-    # -20 in order to let the ball fall into the middle of platform
-    return des - 20
+    return des
 
 def mistake_adjust(des):
     des_new = predict_des()
     des_new = reflect_adjust(des_new)
     return (des + des_new) / 2
-
 
 class MLPlay:
     def __init__(self):
@@ -96,12 +94,12 @@ class MLPlay:
             # destination has already been
             else:
                 # generate the command according to the destination
-                if destination < scene_info['platform'][0]:
-                    command = 'MOVE_LEFT'
-                elif destination > scene_info['platform'][0]:
-                    command = 'MOVE_RIGHT'
-                else:
+                if scene_info['platform'][0] >= destination - 15 and scene_info['platform'][0] <= destination - 5:
                     command = 'NONE'
+                elif scene_info['platform'][0] > destination - 5:
+                    command = 'MOVE_LEFT'
+                else:
+                    command = 'MOVE_RIGHT'
 
                 # mistake adjust
                 point_a[0] = point_b[0]
@@ -109,7 +107,6 @@ class MLPlay:
                 point_b[0] = scene_info['ball'][0]
                 point_b[1] = scene_info['ball'][1]
                 destination = mistake_adjust(destination)
-
 
                 # clear the data (hit the ball)
                 if scene_info['ball'][1] >= 393:
